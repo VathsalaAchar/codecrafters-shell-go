@@ -16,7 +16,13 @@ func main() {
 
 		// remove the newline from the end of cmd
 		cmd := strings.TrimSuffix(input, "\n")
-		msg := fmt.Sprintf("%s: command not found\n", cmd)
-		fmt.Print(msg)
+
+		switch cmd {
+		case "exit 0":
+			return
+		default:
+			msg := fmt.Sprintf("%s: command not found\n", cmd)
+			fmt.Print(msg)
+		}
 	}
 }
