@@ -19,7 +19,7 @@ func main() {
 
 		switch cmd {
 		case "exit 0":
-			return
+			os.Exit(0)
 		default:
 			msg := fmt.Sprintf("%s: command not found\n", cmd)
 			fmt.Print(msg)
