@@ -9,14 +9,14 @@ import (
 
 func main() {
 	for {
-		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
 
 		// Wait for user input
-		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		input, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 
 		// remove the newline from the end of cmd
-		cmd = strings.TrimSuffix(cmd, "\n")
-		fmt.Printf("%s: command not found\n", cmd)
+		cmd := strings.TrimSuffix(input, "\n")
+		msg := fmt.Sprintf("%s: command not found\n", cmd)
+		fmt.Print(msg)
 	}
 }
