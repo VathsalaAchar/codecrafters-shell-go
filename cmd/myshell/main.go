@@ -22,9 +22,6 @@ func main() {
 }
 
 func run_command(cmd string) {
-	// built-in commands
-	// builtInCommands :=
-
 	switch {
 	case cmd == "exit 0":
 		os.Exit(0)
