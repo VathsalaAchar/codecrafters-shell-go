@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -32,15 +33,28 @@ func run_command(cmd string) {
 		fmt.Println(echo_msg)
 	case strings.HasPrefix(cmd, "type"):
 		var msg string
+		paths_to_check := strings.Split(os.Getenv("PATH"), ":")
 		cmd_to_type := strings.TrimSpace(strings.TrimLeft(cmd, "type"))
+
 		if slices.Contains(builtin_cmds, cmd_to_type) {
-			msg = fmt.Sprintf("%s is a shell builtin\n", cmd_to_type)
+			msg = fmt.Sprintf("%s is a shell builtin", cmd_to_type)
 		} else {
-			msg = fmt.Sprintf("%s: not found\n", cmd_to_type)
+			// assign message for failure
+			msg = fmt.Sprintf("%s: not found", cmd_to_type)
+			// then check if the command to find type is in path
+			for _, cpath := range paths_to_check {
+				c, _ := os.ReadDir(cpath)
+				for _, entry := range c {
+					if cmd_to_type == entry.Name() {
+						msg = fmt.Sprintf("%s is %s", cmd_to_type, filepath.Join(cpath, entry.Name()))
+						break
+					}
+				}
+			}
 		}
-		fmt.Print(msg)
+		fmt.Println(msg)
 	default:
-		msg := fmt.Sprintf("%s: command not found\n", cmd)
-		fmt.Print(msg)
+		msg := fmt.Sprintf("%s: command not found", cmd)
+		fmt.Println(msg)
 	}
 }
