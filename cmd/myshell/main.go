@@ -43,12 +43,11 @@ func run_command(cmd string) {
 			msg = fmt.Sprintf("%s: not found", cmd_to_type)
 			// then check if the command to find type is in path
 			for _, cpath := range paths_to_check {
-				c, _ := os.ReadDir(cpath)
-				for _, entry := range c {
-					if cmd_to_type == entry.Name() {
-						msg = fmt.Sprintf("%s is %s", cmd_to_type, filepath.Join(cpath, entry.Name()))
-						break
-					}
+				exec_path := filepath.Join(cpath, cmd_to_type)
+				_, err := os.Stat(exec_path)
+				if err == nil {
+					msg = fmt.Sprintf("%s is %s", cmd_to_type, exec_path)
+					break
 				}
 			}
 		}
