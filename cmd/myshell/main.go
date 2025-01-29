@@ -67,7 +67,7 @@ func run_command(cmd string) {
 		// if there are two or more arguments split into exe and arguments
 		exe_name := split_args[0]
 		args := split_args[1]
-
+		// if executable exists then run it
 		for _, cpath := range paths_to_check {
 			exec_path := filepath.Join(cpath, exe_name)
 			_, err := os.Stat(exec_path)
