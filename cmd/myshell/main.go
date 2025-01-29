@@ -26,7 +26,7 @@ func main() {
 }
 
 func run_command(cmd string) {
-	builtin_cmds := []string{"echo", "exit", "type", "pwd"}
+	builtin_cmds := []string{"echo", "exit", "type", "pwd", "cd"}
 	switch {
 	case cmd == "exit 0":
 		os.Exit(0)
@@ -36,6 +36,13 @@ func run_command(cmd string) {
 			log.Fatal(err)
 		}
 		fmt.Println(dir)
+	case strings.HasPrefix(cmd, "cd"):
+		// change directory here
+		dir_to_ch := strings.TrimSpace(strings.TrimLeft(cmd, "cd"))
+		err := os.Chdir(dir_to_ch)
+		if err != nil {
+			fmt.Printf("cd: %s: No such file or directory\n", dir_to_ch)
+		}
 	case strings.HasPrefix(cmd, "echo"):
 		echo_msg := strings.TrimSpace(strings.TrimLeft(cmd, "echo"))
 		fmt.Println(echo_msg)
