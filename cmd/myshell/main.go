@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -25,10 +26,16 @@ func main() {
 }
 
 func run_command(cmd string) {
-	builtin_cmds := []string{"echo", "exit", "type"}
+	builtin_cmds := []string{"echo", "exit", "type", "pwd"}
 	switch {
 	case cmd == "exit 0":
 		os.Exit(0)
+	case cmd == "pwd":
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(dir)
 	case strings.HasPrefix(cmd, "echo"):
 		echo_msg := strings.TrimSpace(strings.TrimLeft(cmd, "echo"))
 		fmt.Println(echo_msg)
