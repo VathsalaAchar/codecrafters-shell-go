@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -53,7 +54,36 @@ func run_command(cmd string) {
 		}
 		fmt.Println(msg)
 	default:
+		paths_to_check := strings.Split(os.Getenv("PATH"), ":")
+		// set default message
 		msg := fmt.Sprintf("%s: command not found", cmd)
-		fmt.Println(msg)
+		// get the executable name and arguments
+		split_args := strings.SplitN(cmd, " ", 2)
+		// fail if there is only 1 arg
+		if len(split_args) < 2 {
+			fmt.Println(msg)
+			return
+		}
+		// if there are two or more arguments split into exe and arguments
+		exe_name := split_args[0]
+		args := split_args[1]
+
+		for _, cpath := range paths_to_check {
+			exec_path := filepath.Join(cpath, exe_name)
+			_, err := os.Stat(exec_path)
+			// if no error i.e., exe file exists
+			if err == nil {
+				// run the command
+				c := exec.Command(exe_name, args)
+				stdout, err := c.Output()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				// get the output message
+				fmt.Print(string(stdout))
+				return
+			}
+		}
 	}
 }
