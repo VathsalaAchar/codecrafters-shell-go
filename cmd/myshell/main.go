@@ -39,6 +39,9 @@ func run_command(cmd string) {
 	case strings.HasPrefix(cmd, "cd"):
 		// change directory here
 		dir_to_ch := strings.TrimSpace(strings.TrimLeft(cmd, "cd"))
+		if dir_to_ch == "~" {
+			dir_to_ch = os.Getenv("HOME")
+		}
 		err := os.Chdir(dir_to_ch)
 		if err != nil {
 			fmt.Printf("cd: %s: No such file or directory\n", dir_to_ch)
