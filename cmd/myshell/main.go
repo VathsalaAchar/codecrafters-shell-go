@@ -77,11 +77,11 @@ func run_command(cmd string) {
 	}
 }
 
-func get_type(cmd_to_type string) string {
+func get_type(cmd_to_type string) (msg string) {
 	// get the path from environment variable
 	paths_to_check := strings.Split(os.Getenv("PATH"), ":")
 	// assign message for failure
-	msg := fmt.Sprintf("%s: not found", cmd_to_type)
+	msg = fmt.Sprintf("%s: not found", cmd_to_type)
 	// then check if the command to find type is in path
 	for _, cpath := range paths_to_check {
 		exec_path := filepath.Join(cpath, cmd_to_type)
@@ -91,7 +91,7 @@ func get_type(cmd_to_type string) string {
 			break
 		}
 	}
-	return msg
+	return
 }
 
 func run_exe(exe_name, args string) {
