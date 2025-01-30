@@ -51,23 +51,12 @@ func run_command(cmd string) {
 		fmt.Println(echo_msg)
 	case strings.HasPrefix(cmd, "type"):
 		var msg string
-		paths_to_check := strings.Split(os.Getenv("PATH"), ":")
 		cmd_to_type := strings.TrimSpace(strings.TrimLeft(cmd, "type"))
 
 		if slices.Contains(builtin_cmds, cmd_to_type) {
 			msg = fmt.Sprintf("%s is a shell builtin", cmd_to_type)
 		} else {
-			// assign message for failure
-			msg = fmt.Sprintf("%s: not found", cmd_to_type)
-			// then check if the command to find type is in path
-			for _, cpath := range paths_to_check {
-				exec_path := filepath.Join(cpath, cmd_to_type)
-				_, err := os.Stat(exec_path)
-				if err == nil {
-					msg = fmt.Sprintf("%s is %s", cmd_to_type, exec_path)
-					break
-				}
-			}
+			msg = get_type(cmd_to_type)
 		}
 		fmt.Println(msg)
 	default:
@@ -86,6 +75,23 @@ func run_command(cmd string) {
 		run_exe(exe_name, args)
 
 	}
+}
+
+func get_type(cmd_to_type string) string {
+	// get the path from environment variable
+	paths_to_check := strings.Split(os.Getenv("PATH"), ":")
+	// assign message for failure
+	msg := fmt.Sprintf("%s: not found", cmd_to_type)
+	// then check if the command to find type is in path
+	for _, cpath := range paths_to_check {
+		exec_path := filepath.Join(cpath, cmd_to_type)
+		_, err := os.Stat(exec_path)
+		if err == nil {
+			msg = fmt.Sprintf("%s is %s", cmd_to_type, exec_path)
+			break
+		}
+	}
+	return msg
 }
 
 func run_exe(exe_name, args string) {
