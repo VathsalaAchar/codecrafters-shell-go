@@ -71,7 +71,6 @@ func run_command(cmd string) {
 		}
 		fmt.Println(msg)
 	default:
-		paths_to_check := strings.Split(os.Getenv("PATH"), ":")
 		// set default message
 		msg := fmt.Sprintf("%s: command not found", cmd)
 		// get the executable name and arguments
@@ -84,12 +83,15 @@ func run_command(cmd string) {
 		// if there are two or more arguments split into exe and arguments
 		exe_name := split_args[0]
 		args := split_args[1]
-		run_exe(exe_name, args, paths_to_check)
+		run_exe(exe_name, args)
 
 	}
 }
 
-func run_exe(exe_name, args string, paths_to_check []string) {
+func run_exe(exe_name, args string) {
+	// get the path from environment variable
+	paths_to_check := strings.Split(os.Getenv("PATH"), ":")
+
 	// if executable exists then run it
 	for _, cpath := range paths_to_check {
 		exec_path := filepath.Join(cpath, exe_name)
