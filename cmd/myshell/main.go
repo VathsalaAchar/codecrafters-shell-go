@@ -84,23 +84,28 @@ func run_command(cmd string) {
 		// if there are two or more arguments split into exe and arguments
 		exe_name := split_args[0]
 		args := split_args[1]
-		// if executable exists then run it
-		for _, cpath := range paths_to_check {
-			exec_path := filepath.Join(cpath, exe_name)
-			_, err := os.Stat(exec_path)
-			// if no error i.e., exe file exists
-			if err == nil {
-				// run the command
-				c := exec.Command(exe_name, args)
-				stdout, err := c.Output()
-				if err != nil {
-					fmt.Println(err.Error())
-					return
-				}
-				// get the output message
-				fmt.Print(string(stdout))
+		run_exe(exe_name, args, paths_to_check)
+
+	}
+}
+
+func run_exe(exe_name, args string, paths_to_check []string) {
+	// if executable exists then run it
+	for _, cpath := range paths_to_check {
+		exec_path := filepath.Join(cpath, exe_name)
+		_, err := os.Stat(exec_path)
+		// if no error i.e., exe file exists
+		if err == nil {
+			// run the command
+			c := exec.Command(exe_name, args)
+			stdout, err := c.Output()
+			if err != nil {
+				fmt.Println(err.Error())
 				return
 			}
+			// get the output message
+			fmt.Print(string(stdout))
+			return
 		}
 	}
 }
