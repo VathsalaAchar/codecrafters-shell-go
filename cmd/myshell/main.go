@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -48,6 +49,12 @@ func run_command(cmd string) {
 		}
 	case strings.HasPrefix(cmd, "echo"):
 		echo_msg := strings.TrimSpace(strings.TrimLeft(cmd, "echo"))
+		if strings.Contains(echo_msg, "'") {
+			// remove the single quotes and join
+			echo_msg = strings.Join(remove_single_quotes(echo_msg), "")
+		} else {
+			echo_msg = remove_space((echo_msg))
+		}
 		fmt.Println(echo_msg)
 	case strings.HasPrefix(cmd, "type"):
 		var msg string
@@ -77,6 +84,23 @@ func run_command(cmd string) {
 	}
 }
 
+func remove_space(msg string) string {
+	space := regexp.MustCompile(`\s+`)
+	msg = space.ReplaceAllString(msg, " ")
+	return msg
+}
+
+func remove_single_quotes(msg string) []string {
+	msg_no_quotes := make([]string, 1)
+	msg_split := strings.SplitAfter(msg, "'")
+	for _, elem := range msg_split {
+		if elem != "'" {
+			msg_no_quotes = append(msg_no_quotes, strings.TrimSuffix(elem, "'"))
+		}
+	}
+	return msg_no_quotes
+}
+
 func get_type(cmd_to_type string) (msg string) {
 	// get the path from environment variable
 	paths_to_check := strings.Split(os.Getenv("PATH"), ":")
@@ -97,6 +121,13 @@ func get_type(cmd_to_type string) (msg string) {
 func run_exe(exe_name, args string) {
 	// get the path from environment variable
 	paths_to_check := strings.Split(os.Getenv("PATH"), ":")
+	// set of arguments
+	var arguments []string
+	if strings.Contains(args, "'") {
+		arguments = remove_single_quotes(args)
+	} else {
+		arguments = strings.Split(args, " ")
+	}
 
 	// if executable exists then run it
 	for _, cpath := range paths_to_check {
@@ -105,12 +136,8 @@ func run_exe(exe_name, args string) {
 		// if no error i.e., exe file exists
 		if err == nil {
 			// run the command
-			c := exec.Command(exe_name, args)
-			stdout, err := c.Output()
-			if err != nil {
-				fmt.Println(err.Error())
-				return
-			}
+			c := exec.Command(exe_name, arguments...)
+			stdout, _ := c.Output()
 			// get the output message
 			fmt.Print(string(stdout))
 			return
